@@ -1,0 +1,42 @@
+name: semai
+description: "Semai, aplikasi perawatan tanaman. Tugas aplikasi mobile (frontend, dummy data)."
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+  flutter: ">=3.22.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  provider: ^6.1.2
+  connectivity_plus: ^6.1.0
+  image_picker: ^1.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/plants/
+
+  # Huruf Outfit: taruh empat file TTF di assets/fonts/ (lihat BACA-SAYA.txt
+  # di sana), lalu hapus tanda # di bawah. Selama belum ada, build gagal kalau
+  # blok ini aktif, jadi dibiarkan nonaktif dan aplikasi memakai font bawaan.
+  # fonts:
+  #   - family: Outfit
+  #     fonts:
+  #       - asset: assets/fonts/Outfit-Regular.ttf
+  #       - asset: assets/fonts/Outfit-Medium.ttf
+  #         weight: 500
+  #       - asset: assets/fonts/Outfit-SemiBold.ttf
+  #         weight: 600
+  #       - asset: assets/fonts/Outfit-Bold.ttf
+  #         weight: 700

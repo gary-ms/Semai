@@ -1,0 +1,1 @@
+Taruh Outfit-Regular.ttf, Outfit-Medium.ttf, Outfit-SemiBold.ttf, Outfit-Bold.ttf di folder ini (unduh gratis dari fonts.google.com/specimen/Outfit), lalu hapus tanda # pada blok fonts di pubspec.yaml.

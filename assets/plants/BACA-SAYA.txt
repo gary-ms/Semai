@@ -1,0 +1,8 @@
+Taruh foto PNG tanpa latar di sini, nama file persis seperti ini:
+monstera.png
+sukulen.png
+pakis.png
+kaktus.png
+lidah-mertua.png
+sirih-gading.png
+Foto yang belum ada otomatis diganti ilustrasi cadangan.
