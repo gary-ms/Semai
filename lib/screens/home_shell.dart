@@ -7,10 +7,11 @@ import '../state/plant_store.dart';
 import '../widgets/common.dart';
 import '../widgets/motion.dart';
 import 'collection_screen.dart';
+import 'dashboard_screen.dart';
 import 'profile_screen.dart';
 import 'schedule_screen.dart';
 
-/// Kerangka utama dengan rel hitam di kiri (Tanaman, Jadwal, Profil).
+/// Kerangka utama dengan rel hitam di kiri (Beranda, Tanaman, Jadwal, Profil).
 /// IndexedStack menjaga state tiap tab (scroll, pencarian) saat berpindah tab.
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
@@ -40,7 +41,14 @@ class _HomeShellState extends State<HomeShell>
     if (!MediaQuery.disableAnimationsOf(context)) _fade.forward(from: 0);
   }
 
-  static const List<String> _labels = <String>['Tanaman', 'Jadwal', 'Profil'];
+  static const int _collectionTab = 1;
+
+  static const List<String> _labels = <String>[
+    'Beranda',
+    'Tanaman',
+    'Jadwal',
+    'Profil',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -79,10 +87,13 @@ class _HomeShellState extends State<HomeShell>
                         ),
                         child: IndexedStack(
                           index: _index,
-                          children: const <Widget>[
-                            CollectionScreen(),
-                            ScheduleScreen(),
-                            ProfileScreen(),
+                          children: <Widget>[
+                            DashboardScreen(
+                              onOpenCollection: () => _select(_collectionTab),
+                            ),
+                            const CollectionScreen(),
+                            const ScheduleScreen(),
+                            const ProfileScreen(),
                           ],
                         ),
                       ),
@@ -93,7 +104,7 @@ class _HomeShellState extends State<HomeShell>
             ),
           ],
         ),
-        floatingActionButton: _index == 0
+        floatingActionButton: _index == _collectionTab
             ? FloatingActionButton(
                 tooltip: 'Tambah tanaman',
                 onPressed: () => Navigator.of(context).pushNamed(Routes.form),
