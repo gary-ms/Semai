@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:provider/provider.dart';
 import 'package:semai/main.dart';
 import 'package:semai/models/plant.dart';
+import 'package:semai/screens/dashboard_screen.dart';
 import 'package:semai/state/plant_store.dart';
 import 'package:semai/utils/validators.dart';
 
@@ -157,5 +159,58 @@ void main() {
 
     expect(find.text('Email wajib diisi'), findsOneWidget);
     expect(find.text('Kata sandi wajib diisi'), findsOneWidget);
+  });
+
+  group('Dashboard', () {
+    PlantStore buildStore() =>
+        PlantStore(listenConnectivity: false, clock: () => fixedNow);
+
+    test('duePlants hanya berisi yang jadwalnya hari ini atau lewat', () {
+      final PlantStore store = buildStore();
+      final DateTime t = store.today;
+      expect(store.duePlants.length, store.dueCount);
+      expect(
+        store.duePlants.every((Plant p) => p.daysUntilWatering(t) <= 0),
+        isTrue,
+      );
+    });
+
+    test('latestPlants urut dari yang paling baru dan dibatasi jumlahnya', () {
+      final PlantStore store = buildStore();
+      final List<Plant> latest = store.latestPlants(2);
+      expect(latest.length, 2);
+      expect(latest[0].acquired.isBefore(latest[1].acquired), isFalse);
+    });
+
+    testWidgets('menampilkan jumlah perlu disiram dan Siram semua bekerja',
+        (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(420, 900);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
+      final PlantStore store = buildStore();
+      final int due = store.duePlants.length;
+      expect(due, greaterThan(1));
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ChangeNotifierProvider<PlantStore>.value(
+            value: store,
+            child: Scaffold(
+              body: DashboardScreen(onOpenCollection: () {}),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Halo, Sari'), findsOneWidget);
+      expect(find.text('$due tanaman perlu disiram'), findsOneWidget);
+
+      await tester.tap(find.text('Siram semua'));
+      await tester.pump();
+
+      expect(store.duePlants, isEmpty);
+      expect(find.text('Semua tanaman sudah disiram'), findsOneWidget);
+    });
   });
 }
