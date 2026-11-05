@@ -193,49 +193,62 @@ class _PlantFormScreenState extends State<PlantFormScreen> {
 
     final String name = _name.text.trim();
     final String species = _species.text.trim();
-    final int interval = int.parse(_interval.text.trim());
-    final int humidity = int.parse(_humidity.text.trim());
-    final int temperature = int.parse(_temperature.text.trim());
-    final int lightPct = int.parse(_lightPct.text.trim());
     final String notes = _notes.text.trim();
-
     final Plant? existing = _editing;
-    if (existing == null) {
-      store.add(
-        Plant(
-          id: store.newId(),
-          name: name,
-          species: species,
-          kind: _kind,
-          place: _place,
-          humidity: humidity,
-          temperature: temperature,
-          lightPercent: lightPct,
-          intervalDays: interval,
-          lastWatered: _lastWatered,
-          wateredOn: <DateTime>[_lastWatered],
-          photoPath: _photoPath,
-          acquired: store.today,
-          notes: notes,
+
+    try {
+      final int interval = int.parse(_interval.text.trim());
+      final int humidity = int.parse(_humidity.text.trim());
+      final int temperature = int.parse(_temperature.text.trim());
+      final int lightPct = int.parse(_lightPct.text.trim());
+
+      if (existing == null) {
+        store.add(
+          Plant(
+            id: store.newId(),
+            name: name,
+            species: species,
+            kind: _kind,
+            place: _place,
+            humidity: humidity,
+            temperature: temperature,
+            lightPercent: lightPct,
+            intervalDays: interval,
+            lastWatered: _lastWatered,
+            wateredOn: <DateTime>[_lastWatered],
+            photoPath: _photoPath,
+            acquired: store.today,
+            notes: notes,
+          ),
+        );
+      } else {
+        store.update(
+          existing.copyWith(
+            name: name,
+            species: species,
+            kind: _kind,
+            place: _place,
+            humidity: humidity,
+            temperature: temperature,
+            lightPercent: lightPct,
+            intervalDays: interval,
+            lastWatered: _lastWatered,
+            notes: notes,
+            photoPath: _photoPath,
+            clearPhoto: _photoPath == null,
+          ),
+        );
+      }
+    } catch (_) {
+      messenger.hideCurrentSnackBar();
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Data belum tersimpan. Periksa isian angka lalu tekan Simpan lagi.',
+          ),
         ),
       );
-    } else {
-      store.update(
-        existing.copyWith(
-          name: name,
-          species: species,
-          kind: _kind,
-          place: _place,
-          humidity: humidity,
-          temperature: temperature,
-          lightPercent: lightPct,
-          intervalDays: interval,
-          lastWatered: _lastWatered,
-          notes: notes,
-          photoPath: _photoPath,
-          clearPhoto: _photoPath == null,
-        ),
-      );
+      return;
     }
 
     _dirty = false;
