@@ -70,15 +70,25 @@ class _JournalSheetState extends State<JournalSheet> {
 
     final PlantStore store = context.read<PlantStore>();
     final ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
-    store.addJournal(
-      widget.plantId,
-      JournalEntry(
-        id: 'j${DateTime.now().microsecondsSinceEpoch}',
-        date: _date,
-        heightCm: Validators.parseHeight(_height.text),
-        note: _note.text.trim(),
-      ),
-    );
+    try {
+      store.addJournal(
+        widget.plantId,
+        JournalEntry(
+          id: 'j${DateTime.now().microsecondsSinceEpoch}',
+          date: _date,
+          heightCm: Validators.parseHeight(_height.text),
+          note: _note.text.trim(),
+        ),
+      );
+    } catch (_) {
+      messenger.hideCurrentSnackBar();
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text('Catatan belum tersimpan. Coba tekan Simpan lagi.'),
+        ),
+      );
+      return;
+    }
     Navigator.of(context).pop();
     messenger.hideCurrentSnackBar();
     messenger.showSnackBar(
