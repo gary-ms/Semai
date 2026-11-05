@@ -1,1 +1,3 @@
-Taruh Outfit-Regular.ttf, Outfit-Medium.ttf, Outfit-SemiBold.ttf, Outfit-Bold.ttf di folder ini (unduh gratis dari fonts.google.com/specimen/Outfit), lalu hapus tanda # pada blok fonts di pubspec.yaml.
+Font Outfit sudah aktif lewat blok fonts di pubspec.yaml.
+Bobot yang dipakai: Light, Regular, Medium, SemiBold, Bold, ExtraBold.
+File Thin, ExtraLight, dan Black disimpan tapi belum didaftarkan.
