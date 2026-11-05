@@ -91,6 +91,18 @@ class PlantStore extends ChangeNotifier {
   int get journalCount =>
       _plants.fold<int>(0, (int sum, Plant p) => sum + p.journal.length);
 
+  /// Tanaman yang jadwalnya hari ini atau sudah lewat, yang paling telat dulu.
+  List<Plant> get duePlants {
+    final DateTime t = today;
+    return scheduled.where((Plant p) => p.daysUntilWatering(t) <= 0).toList();
+  }
+
+  List<Plant> latestPlants(int count) {
+    final List<Plant> list = List<Plant>.of(_plants);
+    list.sort((Plant a, Plant b) => b.acquired.compareTo(a.acquired));
+    return list.take(count).toList();
+  }
+
   String get query => _query;
   Place? get placeFilter => _place;
   bool get onlyDue => _onlyDue;
