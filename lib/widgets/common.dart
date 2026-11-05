@@ -357,7 +357,24 @@ void waterWithUndo(
   ScaffoldMessengerState messenger,
   Plant plant,
 ) {
-  final DateTime? previous = store.water(plant.id);
+  DateTime? previous;
+  try {
+    previous = store.water(plant.id);
+  } catch (_) {
+    _showWaterError(
+      messenger,
+      'Penyiraman ${plant.name} gagal dicatat. Coba lagi.',
+    );
+    return;
+  }
+  if (previous == null) {
+    _showWaterError(
+      messenger,
+      '${plant.name} tidak ditemukan, mungkin sudah dihapus.',
+    );
+    return;
+  }
+  final DateTime restore = previous;
   final Plant? updated = store.byId(plant.id);
   final String next =
       updated == null ? '' : ' Berikutnya ${formatDayDate(updated.nextWatering)}.';
@@ -365,12 +382,65 @@ void waterWithUndo(
   messenger.showSnackBar(
     SnackBar(
       content: Text('${plant.name} sudah disiram.$next'),
-      action: previous == null
-          ? null
-          : SnackBarAction(
-              label: 'Urungkan',
-              onPressed: () => store.unwater(plant.id, previous),
-            ),
+      action: SnackBarAction(
+        label: 'Urungkan',
+        onPressed: () => store.unwater(plant.id, restore),
+      ),
     ),
   );
+}
+
+/// Menyiram semua [plants] sekaligus. Yang gagal dilewati dan dihitung,
+/// supaya satu tanaman bermasalah tidak membatalkan sisanya.
+void waterAllWithUndo(
+  PlantStore store,
+  ScaffoldMessengerState messenger,
+  List<Plant> plants,
+) {
+  final Map<String, DateTime> previous = <String, DateTime>{};
+  for (final Plant p in plants) {
+    try {
+      final DateTime? before = store.water(p.id);
+      if (before != null) previous[p.id] = before;
+    } catch (_) {
+      continue;
+    }
+  }
+
+  if (previous.isEmpty) {
+    _showWaterError(
+      messenger,
+      'Tidak ada tanaman yang berhasil dicatat. Coba lagi.',
+    );
+    return;
+  }
+
+  final int failed = plants.length - previous.length;
+  final String message = failed == 0
+      ? '${previous.length} tanaman sudah disiram.'
+      : '${previous.length} dari ${plants.length} tanaman sudah disiram. '
+          'Sisanya gagal, coba siram satu per satu.';
+  messenger.hideCurrentSnackBar();
+  messenger.showSnackBar(
+    SnackBar(
+      content: Text(message),
+      action: SnackBarAction(
+        label: 'Urungkan',
+        onPressed: () {
+          previous.forEach((String id, DateTime date) {
+            try {
+              store.unwater(id, date);
+            } catch (_) {
+              return;
+            }
+          });
+        },
+      ),
+    ),
+  );
+}
+
+void _showWaterError(ScaffoldMessengerState messenger, String message) {
+  messenger.hideCurrentSnackBar();
+  messenger.showSnackBar(SnackBar(content: Text(message)));
 }
