@@ -147,7 +147,7 @@ void main() {
     await tester.pumpWidget(SemaiApp(store: store));
 
     // Lewati animasi dan timer splash.
-    await tester.pump(const Duration(milliseconds: 2600));
+    await tester.pump(const Duration(milliseconds: 5600));
     await tester.pumpAndSettle();
 
     final Finder loginButton = find.widgetWithText(FilledButton, 'Masuk');

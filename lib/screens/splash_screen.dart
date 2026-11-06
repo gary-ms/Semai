@@ -22,6 +22,11 @@ class _SplashScreenState extends State<SplashScreen>
   late final Animation<double> _grow;
   late final Animation<double> _textFade;
   Timer? _timer;
+  Timer? _dotsTimer;
+  int _dots = 3;
+
+  // Syarat ATS: splash tampil minimal 5 detik.
+  static const Duration _splashDuration = Duration(milliseconds: 5500);
 
   @override
   void initState() {
@@ -36,7 +41,11 @@ class _SplashScreenState extends State<SplashScreen>
       curve: const Interval(0.45, 1.0, curve: Curves.easeOut),
     );
     // Timer hidup di State, jadi tetap berjalan walau layar diputar.
-    _timer = Timer(const Duration(milliseconds: 2400), _goNext);
+    _timer = Timer(_splashDuration, _goNext);
+    _dotsTimer = Timer.periodic(const Duration(milliseconds: 450), (_) {
+      if (!mounted) return;
+      setState(() => _dots = _dots % 3 + 1);
+    });
   }
 
   void _goNext() {
@@ -49,6 +58,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void dispose() {
     _timer?.cancel();
+    _dotsTimer?.cancel();
     _controller.dispose();
     super.dispose();
   }
@@ -100,6 +110,15 @@ class _SplashScreenState extends State<SplashScreen>
                               color: Palette.onNightMuted,
                               fontSize: 15,
                               height: 1.4,
+                            ),
+                          ),
+                          const SizedBox(height: 28),
+                          Text(
+                            'Memuat${'.' * _dots}',
+                            style: const TextStyle(
+                              color: Palette.onNightMuted,
+                              fontSize: 13,
+                              letterSpacing: 0.6,
                             ),
                           ),
                         ],
